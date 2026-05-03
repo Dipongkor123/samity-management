@@ -3,8 +3,8 @@
 @section('title', 'Login')
 
 @section('content')
-    <h2 class="text-2xl font-bold text-gray-800 mb-1">Welcome Back</h2>
-    <p class="text-gray-500 text-sm mb-6">Sign in to your account to continue</p>
+    <h2 class="text-2xl font-bold text-gray-800 mb-1">{{ __('Welcome Back') }}</h2>
+    <p class="text-gray-500 text-sm mb-6">{{ __('Sign in to your account to continue') }}</p>
 
     {{-- Validation Errors --}}
     @if($errors->any())
@@ -22,7 +22,7 @@
 
         {{-- Email --}}
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Email Address') }}</label>
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fas fa-envelope text-gray-400 text-sm"></i>
@@ -36,9 +36,9 @@
         {{-- Password --}}
         <div>
             <div class="flex justify-between items-center mb-1.5">
-                <label class="block text-sm font-medium text-gray-700">Password</label>
+                <label class="block text-sm font-medium text-gray-700">{{ __('Password') }}</label>
                 <a href="{{ route('password.request') }}" class="text-xs text-teal-600 hover:text-teal-800 hover:underline">
-                    Forgot password?
+                    {{ __('Forgot password?') }}
                 </a>
             </div>
             <div class="relative">
@@ -59,34 +59,19 @@
         <div class="flex items-center gap-2">
             <input type="checkbox" name="remember" id="remember"
                 class="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500 cursor-pointer">
-            <label for="remember" class="text-sm text-gray-600 cursor-pointer">Remember me</label>
+            <label for="remember" class="text-sm text-gray-600 cursor-pointer">{{ __('Remember me') }}</label>
         </div>
 
         {{-- Submit --}}
         <button type="submit"
             class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2">
-            <i class="fas fa-sign-in-alt"></i> Sign In
+            <i class="fas fa-sign-in-alt"></i> {{ __('Sign In') }}
         </button>
     </form>
 
     <p class="text-center text-sm text-gray-600 mt-6">
-        Don't have an account?
-        <a href="{{ route('register') }}" class="text-teal-700 font-semibold hover:underline">Create Account</a>
+        {{ __("Don't have an account?") }}
+        <a href="{{ route('register') }}" class="text-teal-700 font-semibold hover:underline">{{ __('Create Account') }}</a>
     </p>
 @endsection
 
-@push('scripts')
-<script>
-function togglePassword(fieldId, iconId) {
-    const field = document.getElementById(fieldId);
-    const icon = document.getElementById(iconId);
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        field.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-    }
-}
-</script>
-@endpush

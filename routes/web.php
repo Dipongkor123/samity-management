@@ -14,8 +14,12 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\FineController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LanguageController;
 
 Route::get('/', fn() => redirect()->route('login'));
+
+// Language switcher (works for guests and auth users)
+Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 
 // Guest-only routes
 Route::middleware('guest')->group(function () {

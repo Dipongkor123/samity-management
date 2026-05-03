@@ -95,10 +95,12 @@
     </div>
 @endsection
 
+@push('scripts')
 <script>
 function togglePassword(fieldId, iconId) {
     const field = document.getElementById(fieldId);
-    const icon = document.getElementById(iconId);
+    const icon  = document.getElementById(iconId);
+    if (!field || !icon) return;
     if (field.type === 'password') {
         field.type = 'text';
         icon.classList.replace('fa-eye', 'fa-eye-slash');
@@ -108,3 +110,4 @@ function togglePassword(fieldId, iconId) {
     }
 }
 </script>
+@endpush

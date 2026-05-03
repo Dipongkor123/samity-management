@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('monthly_installment', 10, 2)->default(0);
             $table->date('issue_date')->nullable();
             $table->date('due_date')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected', 'running', 'closed'])->default('pending');
+            $table->string('status')->default('active'); // active, completed, overdue
             $table->text('purpose')->nullable();
             $table->timestamps();
         });
