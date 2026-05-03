@@ -41,8 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/change-password',[ChangePasswordController::class, 'update'])->name('change-password.update');
 
     // CRUD Resources
-    Route::resource('samities',   SamityController::class)->except(['show']);
-    Route::resource('members',    MemberController::class)->except(['show']);
+    Route::resource('samities', SamityController::class);
+    Route::post('samities/{samity}/members',              [SamityController::class, 'assignMember'])->name('samities.members.assign');
+    Route::delete('samities/{samity}/members/{user}',     [SamityController::class, 'removeMember'])->name('samities.members.remove');
+    Route::patch('samities/{samity}/members/{user}/toggle',[SamityController::class, 'toggleMember'])->name('samities.members.toggle');
+    Route::resource('members',    MemberController::class);
     Route::resource('deposits',   DepositController::class)->except(['show']);
     Route::resource('loans',      LoanController::class)->except(['show']);
     Route::resource('repayments', RepaymentController::class)->except(['show']);

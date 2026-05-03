@@ -108,6 +108,11 @@ $btn_cancel  = 'background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; bor
                     </td>
                     <td style="padding:12px 16px;">
                         <div style="display:flex; gap:6px;">
+                            {{-- View / Manage Members --}}
+                            <a href="{{ route('samities.show', $s->id) }}"
+                                style="width:30px;height:30px;border-radius:8px;border:1px solid #bfdbfe;background:#eff6ff;color:#2563eb;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;" title="{{ __('Manage Members') }}">
+                                <i class="fas fa-users"></i>
+                            </a>
                             <button onclick="openEditSamity({{ $s->id }}, {{ json_encode($s->name) }}, {{ json_encode($s->description) }}, '{{ $s->cycle_type }}', '{{ $s->deposit_amount }}', '{{ $s->start_date?->format('Y-m-d') }}', '{{ $s->meeting_day }}', {{ $s->is_active ? 1 : 0 }})"
                                 style="width:30px;height:30px;border-radius:8px;border:1px solid #99f6e4;background:#f0fdfa;color:#0d9488;cursor:pointer;font-size:12px;" title="{{ __('Edit') }}">
                                 <i class="fas fa-pen-to-square"></i>
@@ -163,8 +168,8 @@ $btn_cancel  = 'background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; bor
                 <input type="date" name="start_date" value="{{ old('start_date') }}" style="{{ $inp }}">
             </div>
             <div>
-                <label style="{{ $lbl }}">{{ __('Meeting Day') }}</label>
-                <select name="meeting_day" style="{{ $inp }}">
+                <label style="{{ $lbl }}" id="c_meeting_label">{{ __('Meeting Day') }}</label>
+                <select name="meeting_day" id="c_meeting_day" style="{{ $inp }}">
                     <option value="">{{ __('Select day') }}</option>
                     @foreach(['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'] as $d)
                         <option value="{{ $d }}" {{ old('meeting_day') === $d ? 'selected':'' }}>{{ $d }}</option>
@@ -215,7 +220,7 @@ $btn_cancel  = 'background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; bor
                 <input type="date" name="start_date" id="edit_start_date" style="{{ $inp }}">
             </div>
             <div>
-                <label style="{{ $lbl }}">{{ __('Meeting Day') }}</label>
+                <label style="{{ $lbl }}" id="e_meeting_label">{{ __('Meeting Day') }}</label>
                 <select name="meeting_day" id="edit_meeting_day" style="{{ $inp }}">
                     <option value="">{{ __('Select day') }}</option>
                     @foreach(['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'] as $d)
@@ -240,18 +245,70 @@ $btn_cancel  = 'background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; bor
 
 @push('scripts')
 <script>
+/* ── Cycle-aware meeting day ── */
+var weekDays   = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
+var monthDates = Array.from({length:31}, function(_,i){ return (i+1)+''; });
+var yearMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function buildMeetingOptions(selectId, labelId, cycleType, currentVal) {
+    var sel   = document.getElementById(selectId);
+    var label = document.getElementById(labelId);
+    sel.innerHTML = '';
+
+    var options, heading;
+    if (cycleType === 'weekly') {
+        options = weekDays;
+        heading = '{{ __("Meeting Day (Day of Week)") }}';
+    } else if (cycleType === 'monthly') {
+        options = monthDates;
+        heading = '{{ __("Meeting Day (Date of Month)") }}';
+    } else {
+        options = yearMonths;
+        heading = '{{ __("Meeting Month") }}';
+    }
+
+    sel.add(new Option('{{ __("Select...") }}', ''));
+    options.forEach(function(o) {
+        var opt = new Option(o, o);
+        if (currentVal === o) opt.selected = true;
+        sel.add(opt);
+    });
+
+    if (label) label.textContent = heading;
+}
+
+// Bind create modal cycle change
+document.addEventListener('DOMContentLoaded', function() {
+    var cCycle = document.querySelector('#modal-create select[name="cycle_type"]');
+    if (cCycle) {
+        buildMeetingOptions('c_meeting_day', 'c_meeting_label', cCycle.value || 'weekly', '{{ old("meeting_day") }}');
+        cCycle.addEventListener('change', function() {
+            buildMeetingOptions('c_meeting_day', 'c_meeting_label', this.value, '');
+        });
+    }
+});
+
 function openEditSamity(id, name, description, cycle, deposit, startDate, meetingDay, isActive) {
-    document.getElementById('edit_edit_id').value       = id;
-    document.getElementById('edit_name').value          = name;
-    document.getElementById('edit_description').value   = description;
-    document.getElementById('edit_deposit_amount').value= deposit;
-    document.getElementById('edit_start_date').value    = startDate;
-    document.getElementById('edit_cycle_type').value    = cycle;
-    document.getElementById('edit_meeting_day').value   = meetingDay;
-    document.getElementById('edit_is_active').checked   = isActive == 1;
-    document.getElementById('edit-samity-form').action  = '/samities/' + id;
+    document.getElementById('edit_edit_id').value        = id;
+    document.getElementById('edit_name').value           = name;
+    document.getElementById('edit_description').value    = description || '';
+    document.getElementById('edit_deposit_amount').value = deposit;
+    document.getElementById('edit_start_date').value     = startDate || '';
+    document.getElementById('edit_cycle_type').value     = cycle;
+    document.getElementById('edit_is_active').checked    = isActive == 1;
+    document.getElementById('edit-samity-form').action   = '/samities/' + id;
+
+    buildMeetingOptions('edit_meeting_day', 'e_meeting_label', cycle, meetingDay);
+
+    // Bind cycle change in edit modal
+    var eCycle = document.getElementById('edit_cycle_type');
+    eCycle.onchange = function() {
+        buildMeetingOptions('edit_meeting_day', 'e_meeting_label', this.value, '');
+    };
+
     openModal('modal-edit');
 }
+
 @if($errors->any())
     document.addEventListener('DOMContentLoaded', () => openModal('modal-create'));
 @endif

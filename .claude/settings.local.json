@@ -1,7 +1,30 @@
 {
   "permissions": {
     "allow": [
-      "Bash(php artisan *)"
+      "Bash(php artisan *)",
+      "Bash(php -r ' *)",
+      "Bash(findstr /r /s \"togglePassword\" \"C:\\\\xampp\\\\htdocs\\\\samity management\\\\resources\\\\views\\\\auth\\\\*.blade.php\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(read f *)",
+      "Bash(python -c 'import sys; data=open\\('\\\\''__TRACKED_VAR__'\\\\'','\\\\''rb'\\\\''\\).read\\(10\\); sys.exit\\(0 if data and data[0:1]==b'\\\\''\\\\x00'\\\\'' else 1\\)')",
+      "Bash(python -c \"import sys; data=open\\('lang/en.json','rb'\\).read\\(10\\); print\\('en.json OK' if data and data[0:1]!=b'\\\\x00' else 'en.json CORRUPTED'\\)\")",
+      "Bash(python -c \"import sys; data=open\\('lang/bn.json','rb'\\).read\\(10\\); print\\('bn.json OK' if data and data[0:1]!=b'\\\\x00' else 'bn.json CORRUPTED'\\)\")",
+      "Bash(git show *)",
+      "Bash(python -c \"import json,sys; json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('bn.json is valid JSON'\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('lang/en.json','r',encoding='utf-8'\\)\\); print\\('en.json keys:', len\\(d\\)\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('bn.json keys:', len\\(d\\)\\)\")",
+      "Bash(grep -n \"\\\\\\\\[error\\\\\\\\]\\\\|\\\\\\\\[critical\\\\\\\\]\\\\|\\\\\\\\[emergency\\\\\\\\]\" storage/logs/laravel.log)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('lang/en.json','r',encoding='utf-8'\\)\\); print\\('en.json OK -', len\\(d\\), 'keys'\\)\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('bn.json OK -', len\\(d\\), 'keys'\\)\")",
+      "Bash(python)",
+      "Bash(php -l app/Http/Controllers/SamityController.php)",
+      "Bash(python -c \"import json; e=json.load\\(open\\('lang/en.json','r',encoding='utf-8'\\)\\); b=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('en:', len\\(e\\), 'bn:', len\\(b\\), '| match:', len\\(e\\)==len\\(b\\)\\)\")"
     ]
   }
 }

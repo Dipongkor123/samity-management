@@ -6,6 +6,7 @@
     <title>@yield('title', 'Dashboard') — Samity Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         #sidebar { transition: transform 0.28s cubic-bezier(.4,0,.2,1); }
@@ -294,26 +295,6 @@
         {{-- Page Content --}}
         <main style="flex:1; padding:24px 24px 16px;">
 
-            @if(session('success'))
-                <div style="display:flex; align-items:center; gap:12px; background:#f0fdf4; border:1px solid #86efac; color:#166534; padding:12px 16px; border-radius:12px; margin-bottom:20px; font-size:0.85rem;">
-                    <i class="fas fa-circle-check" style="color:#22c55e; flex-shrink:0;"></i>
-                    <span style="flex:1;">{{ session('success') }}</span>
-                    <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#86efac; cursor:pointer; font-size:13px;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div style="display:flex; align-items:center; gap:12px; background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; padding:12px 16px; border-radius:12px; margin-bottom:20px; font-size:0.85rem;">
-                    <i class="fas fa-circle-exclamation" style="color:#ef4444; flex-shrink:0;"></i>
-                    <span style="flex:1;">{{ session('error') }}</span>
-                    <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#fca5a5; cursor:pointer; font-size:13px;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            @endif
-
             @yield('content')
         </main>
 
@@ -419,7 +400,50 @@
     </script>
 
     <script>
-    /* ── Global Modal Helpers ── */
+    /* ══════════════════════════════════════
+       SweetAlert2 — Flash Messages
+    ══════════════════════════════════════ */
+    /* ── Toast helper ── */
+    function _toast(type, msg, ms) {
+        const t = {
+            success: { bg:'#dcfce7', color:'#16a34a', fa:'fa-check',       bar:'rgba(22,163,74,.55)'  },
+            error:   { bg:'#fee2e2', color:'#dc2626', fa:'fa-xmark',        bar:'rgba(220,38,38,.55)'  },
+            warning: { bg:'#fef9c3', color:'#ca8a04', fa:'fa-exclamation',  bar:'rgba(202,138,4,.55)'  },
+        }[type] || { bg:'#dcfce7', color:'#16a34a', fa:'fa-check', bar:'rgba(22,163,74,.55)' };
+
+        Swal.fire({
+            html: `<div class="sm-toast-inner">
+                     <span class="sm-toast-icon" style="background:${t.bg};color:${t.color};">
+                       <i class="fas ${t.fa}"></i>
+                     </span>
+                     <span class="sm-toast-msg">${msg}</span>
+                     <button class="sm-toast-close" onclick="Swal.close()" title="Close">
+                       <i class="fas fa-xmark"></i>
+                     </button>
+                   </div>`,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            showCloseButton: false,
+            timer: ms || 3500,
+            timerProgressBar: true,
+            customClass: { popup: 'sm-toast-popup', timerProgressBar: 'sm-toast-bar' },
+            didOpen: (el) => {
+                el.querySelector('.sm-toast-bar-ref')?.style.setProperty('--bar', t.bar);
+                el.style.setProperty('--toast-bar', t.bar);
+                el.addEventListener('mouseenter', Swal.stopTimer);
+                el.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+    }
+
+    @if(session('success'))  _toast('success', '{{ addslashes(session("success")) }}', 3500); @endif
+    @if(session('error'))    _toast('error',   '{{ addslashes(session("error")) }}',   4500); @endif
+    @if(session('warning'))  _toast('warning', '{{ addslashes(session("warning")) }}', 4000); @endif
+
+    /* ══════════════════════════════════════
+       Global Modal Helpers
+    ══════════════════════════════════════ */
     function openModal(id) {
         const m = document.getElementById(id);
         if (!m) return;
@@ -432,14 +456,12 @@
         m.style.display = 'none';
         document.body.style.overflow = '';
     }
-    // Close modal on backdrop click
     document.addEventListener('click', function (e) {
         if (e.target.classList && e.target.classList.contains('sm-modal')) {
             e.target.style.display = 'none';
             document.body.style.overflow = '';
         }
     });
-    // Close modal on Escape key
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.sm-modal').forEach(m => {
@@ -448,40 +470,168 @@
             document.body.style.overflow = '';
         }
     });
-    /* ── Global Delete Helper ── */
+
+    /* ══════════════════════════════════════
+       Global Delete — SweetAlert2 (Premium)
+    ══════════════════════════════════════ */
     function confirmDelete(url, label) {
-        document.getElementById('delete-label').textContent = label || 'this record';
-        document.getElementById('delete-form').action = url;
-        openModal('modal-delete-global');
+        Swal.fire({
+            html: `<div class="sm-dlg-icon sm-dlg-icon--danger"><i class="fas fa-trash-can"></i></div>
+               <h3 class="sm-dlg-title">{{ __("Delete Confirmation") }}</h3>
+               <p class="sm-dlg-body">{{ __("You are about to delete") }} <strong style="color:#1e293b;">${label||''}</strong>. {{ __("This action cannot be undone.") }}</p>`,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-trash-can"></i> {{ __("Yes, Delete") }}',
+            cancelButtonText:  '{{ __("Cancel") }}',
+            reverseButtons: true,
+            focusCancel: true,
+            buttonsStyling: false,
+            customClass: {
+                popup:         'sm-dlg-popup',
+                actions:       'sm-dlg-actions',
+                confirmButton: 'sm-dlg-btn sm-dlg-btn--danger',
+                cancelButton:  'sm-dlg-btn sm-dlg-btn--ghost',
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = url;
+                form.innerHTML = `@csrf @method('DELETE')`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
     </script>
 
-    {{-- Global Delete Confirmation Modal --}}
-    <div id="modal-delete-global" class="sm-modal" style="display:none; position:fixed; inset:0; z-index:300; background:rgba(15,23,42,0.65); align-items:center; justify-content:center; backdrop-filter:blur(3px);">
-        <div style="background:#fff; border-radius:16px; width:380px; max-width:95vw; box-shadow:0 25px 60px rgba(0,0,0,0.3); overflow:hidden;">
-            <div style="padding:28px 28px 20px; text-align:center;">
-                <div style="width:56px; height:56px; background:#fef2f2; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-                    <i class="fas fa-trash-can" style="color:#ef4444; font-size:1.4rem;"></i>
-                </div>
-                <h3 style="font-size:1rem; font-weight:700; color:#0f172a; margin:0 0 8px;">{{ __('Delete Confirmation') }}</h3>
-                <p style="font-size:0.85rem; color:#64748b; margin:0;">{{ __('Are you sure you want to delete') }} <strong id="delete-label"></strong>? {{ __('This action cannot be undone.') }}</p>
-            </div>
-            <div style="display:flex; gap:10px; padding:0 24px 24px;">
-                <button type="button" onclick="closeModal('modal-delete-global')"
-                    style="flex:1; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; color:#64748b; font-size:0.85rem; font-weight:600; cursor:pointer;">
-                    {{ __('Cancel') }}
-                </button>
-                <form id="delete-form" method="POST" style="flex:1; margin:0;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        style="width:100%; padding:10px; border:none; border-radius:10px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; font-size:0.85rem; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(239,68,68,0.35);">
-                        {{ __('Yes, Delete') }}
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <style>
+    /* ════════════════════════════════════════
+       TOAST
+    ════════════════════════════════════════ */
+    .sm-toast-popup {
+        padding: 0 !important;
+        border-radius: 10px !important;
+        box-shadow: 0 8px 28px rgba(15,23,42,0.13), 0 1px 4px rgba(0,0,0,0.06) !important;
+        border: 1px solid #e8edf3 !important;
+        background: #fff !important;
+        overflow: hidden !important;
+        max-width: 340px !important;
+        font-family: 'Segoe UI', system-ui, sans-serif !important;
+    }
+    .sm-toast-popup .swal2-html-container { margin:0 !important; padding:0 !important; overflow:visible !important; }
+    .sm-toast-popup .swal2-timer-progress-bar {
+        height: 2px !important;
+        background: var(--toast-bar, rgba(13,148,136,.55)) !important;
+    }
+    /* Inner layout */
+    .sm-toast-inner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 12px;
+    }
+    /* Icon badge */
+    .sm-toast-icon {
+        width: 30px; height: 30px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        font-size: 13px;
+    }
+    /* Message */
+    .sm-toast-msg {
+        flex: 1;
+        font-size: 0.815rem;
+        font-weight: 500;
+        color: #1e293b;
+        line-height: 1.4;
+    }
+    /* Close button */
+    .sm-toast-close {
+        width: 24px; height: 24px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+        transition: background 0.15s, color 0.15s;
+        padding: 0;
+    }
+    .sm-toast-close:hover { background: #f1f5f9; color: #475569; }
+
+    /* ════════════════════════════════════════
+       CONFIRM DIALOG
+    ════════════════════════════════════════ */
+    .sm-dlg-popup {
+        font-family: 'Segoe UI', system-ui, sans-serif !important;
+        border-radius: 14px !important;
+        padding: 24px 24px 20px !important;
+        max-width: 320px !important;
+        box-shadow: 0 12px 40px rgba(15,23,42,0.16), 0 2px 8px rgba(0,0,0,0.06) !important;
+    }
+    .sm-dlg-popup .swal2-html-container { margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+    /* Icon */
+    .sm-dlg-icon {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 14px;
+        font-size: 18px;
+    }
+    .sm-dlg-icon--danger  { background: #fee2e2; color: #dc2626; }
+    .sm-dlg-icon--warning { background: #fef3c7; color: #d97706; }
+    .sm-dlg-icon--teal    { background: #ccfbf1; color: #0d9488; }
+    /* Title */
+    .sm-dlg-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 6px;
+        text-align: center;
+    }
+    /* Body */
+    .sm-dlg-body {
+        font-size: 0.8rem;
+        color: #64748b;
+        text-align: center;
+        margin: 0;
+        line-height: 1.55;
+    }
+    /* Actions */
+    .sm-dlg-actions {
+        gap: 8px !important;
+        margin-top: 18px !important;
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+    }
+    /* Base button */
+    .sm-dlg-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 8px 18px !important;
+        border-radius: 8px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        border: none !important;
+        transition: all 0.15s ease !important;
+        min-width: 90px !important;
+    }
+    .sm-dlg-btn:focus { outline: none !important; }
+    .sm-dlg-btn--danger  { background: #ef4444 !important; color: #fff !important; }
+    .sm-dlg-btn--danger:hover  { background: #dc2626 !important; }
+    .sm-dlg-btn--warning { background: #f59e0b !important; color: #fff !important; }
+    .sm-dlg-btn--warning:hover { background: #d97706 !important; }
+    .sm-dlg-btn--teal    { background: #0d9488 !important; color: #fff !important; }
+    .sm-dlg-btn--teal:hover    { background: #0f766e !important; }
+    .sm-dlg-btn--ghost   { background: #f1f5f9 !important; color: #475569 !important; border: 1px solid #e2e8f0 !important; }
+    .sm-dlg-btn--ghost:hover   { background: #e2e8f0 !important; color: #1e293b !important; }
+    </style>
 
     @stack('scripts')
 </body>

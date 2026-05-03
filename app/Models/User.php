@@ -15,27 +15,24 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'nid',
-        'address',
-        'role',
-        'is_active',
-        'password',
+        'name', 'email', 'phone', 'nid', 'address',
+        'photo', 'date_of_birth', 'blood_group', 'occupation',
+        'father_name', 'mother_name', 'spouse_name',
+        'emergency_contact', 'emergency_phone',
+        'role', 'is_active', 'password',
     ];
 
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
+            'date_of_birth'     => 'date',
         ];
     }
 
@@ -43,6 +40,20 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function getPhotoUrlAttribute(): string
+    {
+        return $this->photo
+            ? asset('uploads/members/' . $this->photo)
+            : '';
+    }
+
+    public function getAgeAttribute(): ?int
+    {
+        return $this->date_of_birth ? $this->date_of_birth->age : null;
+    }
+
+    /* ─── Relationships ─── */
 
     public function samities(): BelongsToMany
     {
@@ -69,5 +80,10 @@ class User extends Authenticatable
     public function smsLogs(): HasMany
     {
         return $this->hasMany(SmsLog::class);
+    }
+
+    public function statusLogs(): HasMany
+    {
+        return $this->hasMany(MemberStatusLog::class)->latest();
     }
 }

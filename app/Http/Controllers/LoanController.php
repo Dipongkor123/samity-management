@@ -55,7 +55,7 @@ class LoanController extends Controller
 
         if (empty($data['due_date'])) {
             $data['due_date'] = \Carbon\Carbon::parse($data['issue_date'])
-                                              ->addMonths($data['duration_months'])
+                                              ->addMonths((int) $data['duration_months'])
                                               ->toDateString();
         }
 
@@ -83,6 +83,12 @@ class LoanController extends Controller
             'purpose'             => ['nullable', 'string', 'max:255'],
             'status'              => ['required', 'in:active,completed,overdue'],
         ]);
+
+        if (empty($data['due_date'])) {
+            $data['due_date'] = \Carbon\Carbon::parse($data['issue_date'])
+                                              ->addMonths((int) $data['duration_months'])
+                                              ->toDateString();
+        }
 
         $loan->update($data);
 
