@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('samity_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('reason', ['late_payment', 'absent', 'other'])->default('other');
+            $table->string('reason'); // free-text reason
             $table->decimal('amount', 10, 2);
             $table->date('fine_date');
-            $table->enum('status', ['paid', 'unpaid'])->default('unpaid');
+            $table->string('status')->default('pending'); // pending, paid, waived
             $table->string('note')->nullable();
             $table->timestamps();
         });

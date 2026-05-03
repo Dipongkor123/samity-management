@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('samities', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->text('description')->nullable();
-            $table->enum('cycle_type', ['weekly', 'monthly'])->default('monthly');
+            $table->string('cycle_type')->default('monthly'); // weekly, monthly, yearly
             $table->decimal('deposit_amount', 10, 2)->default(0);
-            $table->date('start_date');
-            $table->integer('meeting_day')->nullable()->comment('1-7 for weekly, 1-31 for monthly');
+            $table->date('start_date')->nullable();
+            $table->string('meeting_day')->nullable(); // Saturday, Sunday, etc.
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->decimal('amount', 10, 2);
             $table->date('deposit_date');
-            $table->enum('status', ['paid', 'unpaid', 'late'])->default('unpaid');
+            $table->string('status')->default('paid'); // paid, pending
             $table->string('note')->nullable();
             $table->string('receipt_number')->nullable()->unique();
             $table->timestamps();
