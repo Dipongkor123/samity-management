@@ -17,10 +17,11 @@ class LoanController extends Controller
             $s = $request->search;
             $query->whereHas('user', fn($q) => $q->where('name', 'like', "%$s%"));
         }
-        if ($request->filled('samity_id')) { $query->where('samity_id', $request->samity_id); }
-        if ($request->filled('status'))    { $query->where('status', $request->status); }
-        if ($request->filled('from'))      { $query->whereDate('issue_date', '>=', $request->from); }
-        if ($request->filled('to'))        { $query->whereDate('issue_date', '<=', $request->to); }
+        if ($request->filled('samity_id'))     { $query->where('samity_id', $request->samity_id); }
+        if ($request->filled('status'))        { $query->where('status', $request->status); }
+        if ($request->filled('interest_type')) { $query->where('interest_type', $request->interest_type); }
+        if ($request->filled('from'))          { $query->whereDate('issue_date', '>=', $request->from); }
+        if ($request->filled('to'))            { $query->whereDate('issue_date', '<=', $request->to); }
 
         $loans    = $query->latest('issue_date')->paginate(10)->withQueryString();
         $samities = Samity::where('is_active', true)->orderBy('name')->get();
@@ -45,6 +46,7 @@ class LoanController extends Controller
             'user_id'             => ['required', 'exists:users,id'],
             'amount'              => ['required', 'numeric', 'min:0.01'],
             'interest_rate'       => ['required', 'numeric', 'min:0'],
+            'interest_type'       => ['required', 'in:flat,declining'],
             'duration_months'     => ['required', 'integer', 'min:1'],
             'monthly_installment' => ['required', 'numeric', 'min:0'],
             'issue_date'          => ['required', 'date'],
@@ -59,9 +61,10 @@ class LoanController extends Controller
                                               ->toDateString();
         }
 
-        Loan::create($data);
+        $loan = Loan::create($data);
+        $loan->generateSchedule();
 
-        return redirect()->route('loans.index')->with('success', 'Loan issued successfully.');
+        return redirect()->route('loans.index')->with('success', 'Loan issued and EMI schedule generated successfully.');
     }
 
     public function edit(Loan $loan)
@@ -76,6 +79,7 @@ class LoanController extends Controller
             'user_id'             => ['required', 'exists:users,id'],
             'amount'              => ['required', 'numeric', 'min:0.01'],
             'interest_rate'       => ['required', 'numeric', 'min:0'],
+            'interest_type'       => ['required', 'in:flat,declining'],
             'duration_months'     => ['required', 'integer', 'min:1'],
             'monthly_installment' => ['required', 'numeric', 'min:0'],
             'issue_date'          => ['required', 'date'],
@@ -91,8 +95,10 @@ class LoanController extends Controller
         }
 
         $loan->update($data);
+        $loan->refresh();
+        $loan->generateSchedule();
 
-        return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+        return redirect()->route('loans.index')->with('success', 'Loan updated and EMI schedule regenerated.');
     }
 
     public function destroy(Loan $loan)
@@ -104,5 +110,17 @@ class LoanController extends Controller
         $loan->delete();
 
         return redirect()->route('loans.index')->with('success', 'Loan deleted successfully.');
+    }
+
+    public function schedule(Loan $loan)
+    {
+        $loan->load(['user', 'samity', 'schedules', 'repayments']);
+
+        if ($loan->schedules->isEmpty()) {
+            $loan->generateSchedule();
+            $loan->load('schedules');
+        }
+
+        return view('loans.schedule', compact('loan'));
     }
 }

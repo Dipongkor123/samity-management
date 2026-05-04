@@ -24,7 +24,9 @@
       "Bash(python -c \"import json; d=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('bn.json OK -', len\\(d\\), 'keys'\\)\")",
       "Bash(python)",
       "Bash(php -l app/Http/Controllers/SamityController.php)",
-      "Bash(python -c \"import json; e=json.load\\(open\\('lang/en.json','r',encoding='utf-8'\\)\\); b=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('en:', len\\(e\\), 'bn:', len\\(b\\), '| match:', len\\(e\\)==len\\(b\\)\\)\")"
+      "Bash(python -c \"import json; e=json.load\\(open\\('lang/en.json','r',encoding='utf-8'\\)\\); b=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('en:', len\\(e\\), 'bn:', len\\(b\\), '| match:', len\\(e\\)==len\\(b\\)\\)\")",
+      "Bash(findstr savings *)",
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app = require '\\\\''bootstrap/app.php'\\\\''; echo '\\\\''OK'\\\\'';')"
     ]
   }
 }

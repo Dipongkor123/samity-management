@@ -15,6 +15,9 @@ use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\FineController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\SavingsPlanController;
+use App\Http\Controllers\SavingsDepositController;
+use App\Http\Controllers\SavingsWithdrawalController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -48,8 +51,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('members',    MemberController::class);
     Route::resource('deposits',   DepositController::class)->except(['show']);
     Route::resource('loans',      LoanController::class)->except(['show']);
+    Route::get('loans/{loan}/schedule', [LoanController::class, 'schedule'])->name('loans.schedule');
     Route::resource('repayments', RepaymentController::class)->except(['show']);
     Route::resource('fines',      FineController::class)->except(['show']);
+
+    // Savings Module
+    Route::prefix('savings')->name('savings.')->group(function () {
+        Route::resource('plans',       SavingsPlanController::class)->except(['show', 'create', 'edit'])->parameters(['plans' => 'plan']);
+        Route::resource('deposits',    SavingsDepositController::class)->except(['show', 'create', 'edit'])->parameters(['deposits' => 'deposit']);
+        Route::resource('withdrawals', SavingsWithdrawalController::class)->except(['show', 'create', 'edit'])->parameters(['withdrawals' => 'withdrawal']);
+    });
 
     // Reports (read-only)
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

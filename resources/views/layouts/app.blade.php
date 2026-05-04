@@ -130,6 +130,17 @@
                 <i class="fas fa-triangle-exclamation nav-icon"></i> {{ __('Fines') }}
             </a>
 
+            <span class="section-label">{{ __('Savings') }}</span>
+            <a href="{{ route('savings.plans.index') }}" class="nav-link {{ request()->routeIs('savings.plans.*') ? 'active' : '' }}">
+                <i class="fas fa-book-open nav-icon"></i> {{ __('Savings Plans') }}
+            </a>
+            <a href="{{ route('savings.deposits.index') }}" class="nav-link {{ request()->routeIs('savings.deposits.*') ? 'active' : '' }}">
+                <i class="fas fa-coins nav-icon"></i> {{ __('Savings Deposits') }}
+            </a>
+            <a href="{{ route('savings.withdrawals.index') }}" class="nav-link {{ request()->routeIs('savings.withdrawals.*') ? 'active' : '' }}">
+                <i class="fas fa-money-bill-transfer nav-icon"></i> {{ __('Withdrawals') }}
+            </a>
+
             <span class="section-label">{{ __('Management') }}</span>
             <a href="{{ route('members.index') }}" class="nav-link {{ request()->routeIs('members.*') ? 'active' : '' }}">
                 <i class="fas fa-users nav-icon"></i> {{ __('Members') }}
