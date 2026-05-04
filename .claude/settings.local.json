@@ -26,7 +26,13 @@
       "Bash(php -l app/Http/Controllers/SamityController.php)",
       "Bash(python -c \"import json; e=json.load\\(open\\('lang/en.json','r',encoding='utf-8'\\)\\); b=json.load\\(open\\('lang/bn.json','r',encoding='utf-8'\\)\\); print\\('en:', len\\(e\\), 'bn:', len\\(b\\), '| match:', len\\(e\\)==len\\(b\\)\\)\")",
       "Bash(findstr savings *)",
-      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app = require '\\\\''bootstrap/app.php'\\\\''; echo '\\\\''OK'\\\\'';')"
+      "Bash(php -r 'require '\\\\''vendor/autoload.php'\\\\''; $app = require '\\\\''bootstrap/app.php'\\\\''; echo '\\\\''OK'\\\\'';')",
+      "Bash(xargs grep *)",
+      "Bash(findstr /I \"account staff collection reports\")",
+      "Bash(php -r \"require 'vendor/autoload.php'; echo 'OK';\")",
+      "Bash(grep -r '$cur' 'C:\\\\xampp\\\\htdocs\\\\samity management/app/Http/Controllers')",
+      "Bash(grep -n '$cur' 'C:\\\\xampp\\\\htdocs\\\\samity management/resources/views/dashboard.blade.php')",
+      "Bash(grep -n '$cur' 'C:\\\\xampp\\\\htdocs\\\\samity management/resources/views/accounts/index.blade.php')"
     ]
   }
 }

@@ -18,6 +18,9 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\SavingsPlanController;
 use App\Http\Controllers\SavingsDepositController;
 use App\Http\Controllers\SavingsWithdrawalController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\CollectionController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -62,6 +65,21 @@ Route::middleware('auth')->group(function () {
         Route::resource('withdrawals', SavingsWithdrawalController::class)->except(['show', 'create', 'edit'])->parameters(['withdrawals' => 'withdrawal']);
     });
 
-    // Reports (read-only)
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    // Reports
+    Route::get('/reports',              [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/members',      [ReportController::class, 'members'])->name('reports.members');
+    Route::get('/reports/loans',        [ReportController::class, 'loans'])->name('reports.loans');
+    Route::get('/reports/collections',  [ReportController::class, 'collections'])->name('reports.collections');
+    Route::get('/reports/defaulters',   [ReportController::class, 'defaulters'])->name('reports.defaulters');
+
+    // Accounting / Cash Book
+    Route::resource('accounts', AccountController::class)->except(['show', 'create', 'edit']);
+
+    // Staff Management
+    Route::resource('staff', StaffController::class)->except(['show', 'create', 'edit']);
+
+    // Collection Module
+    Route::get('/collection/bulk',         [CollectionController::class, 'bulk'])->name('collection.bulk');
+    Route::post('/collection/bulk',        [CollectionController::class, 'storeBulk'])->name('collection.store-bulk');
+    Route::get('/collection/daily',        [CollectionController::class, 'daily'])->name('collection.daily');
 });

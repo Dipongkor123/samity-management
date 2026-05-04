@@ -14,6 +14,46 @@
         </button>
     </div>
 
+    {{-- Quick Report Links --}}
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:24px;">
+        <a href="{{ route('reports.members') }}" style="background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px 20px; text-decoration:none; display:flex; align-items:center; gap:14px; transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(37,99,235,0.12)'; this.style.borderColor='#93c5fd';" onmouseout="this.style.boxShadow='none'; this.style.borderColor='#e2e8f0';">
+            <div style="width:42px; height:42px; background:#eff6ff; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fas fa-users" style="color:#2563eb; font-size:18px;"></i>
+            </div>
+            <div>
+                <div style="font-size:0.88rem; font-weight:700; color:#1e293b;">{{ __('Member Report') }}</div>
+                <div style="font-size:0.74rem; color:#94a3b8; margin-top:2px;">{{ __('With loan & deposit summary') }}</div>
+            </div>
+        </a>
+        <a href="{{ route('reports.loans') }}" style="background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px 20px; text-decoration:none; display:flex; align-items:center; gap:14px; transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(234,88,12,0.12)'; this.style.borderColor='#fdba74';" onmouseout="this.style.boxShadow='none'; this.style.borderColor='#e2e8f0';">
+            <div style="width:42px; height:42px; background:#fff7ed; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fas fa-hand-holding-dollar" style="color:#ea580c; font-size:18px;"></i>
+            </div>
+            <div>
+                <div style="font-size:0.88rem; font-weight:700; color:#1e293b;">{{ __('Loan Report') }}</div>
+                <div style="font-size:0.74rem; color:#94a3b8; margin-top:2px;">{{ __('Disbursement & repayment') }}</div>
+            </div>
+        </a>
+        <a href="{{ route('reports.collections') }}" style="background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px 20px; text-decoration:none; display:flex; align-items:center; gap:14px; transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(22,163,74,0.12)'; this.style.borderColor='#86efac';" onmouseout="this.style.boxShadow='none'; this.style.borderColor='#e2e8f0';">
+            <div style="width:42px; height:42px; background:#f0fdf4; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fas fa-receipt" style="color:#16a34a; font-size:18px;"></i>
+            </div>
+            <div>
+                <div style="font-size:0.88rem; font-weight:700; color:#1e293b;">{{ __('Collection Report') }}</div>
+                <div style="font-size:0.74rem; color:#94a3b8; margin-top:2px;">{{ __('Period-wise repayments') }}</div>
+            </div>
+        </a>
+        <a href="{{ route('reports.defaulters') }}" style="background:#fff; border:1px solid #fecaca; border-radius:14px; padding:18px 20px; text-decoration:none; display:flex; align-items:center; gap:14px; transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(220,38,38,0.12)'; this.style.borderColor='#f87171';" onmouseout="this.style.boxShadow='none'; this.style.borderColor='#fecaca';">
+            <div style="width:42px; height:42px; background:#fef2f2; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fas fa-user-slash" style="color:#dc2626; font-size:18px;"></i>
+            </div>
+            <div>
+                <div style="font-size:0.88rem; font-weight:700; color:#dc2626;">{{ __('Defaulter Report') }}</div>
+                <div style="font-size:0.74rem; color:#94a3b8; margin-top:2px;">{{ __('Overdue installments') }}</div>
+            </div>
+        </a>
+    </div>
+
     {{-- Summary Stats --}}
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; margin-bottom:14px;">
         <x-stat-card :label="__('Total Members')"   :value="$stats['total_members']"                                :sub="$stats['active_members'] . ' active'"                        icon="fas fa-users"              bg="#eff6ff" iconColor="#2563eb" />

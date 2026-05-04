@@ -53,16 +53,85 @@
         .nav-logout:hover { background-color: rgba(239,68,68,0.1); color: #f87171; }
         .nav-logout:hover .nav-icon { color: #f87171; }
         .section-label {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.11em;
             text-transform: uppercase;
-            color: #475569;
+            color: #3d546b;
             padding: 0 14px;
-            margin-top: 20px;
-            margin-bottom: 4px;
+            margin-top: 18px;
+            margin-bottom: 3px;
             display: block;
         }
+        .nav-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.05);
+            margin: 6px 10px;
+        }
+        /* Group toggle button */
+        .nav-group-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 0.855rem;
+            font-weight: 500;
+            color: #94a3b8;
+            cursor: pointer;
+            width: 100%;
+            border: none;
+            background: none;
+            text-align: left;
+            transition: all 0.15s ease;
+        }
+        .nav-group-btn:hover { background: rgba(255,255,255,0.07); color: #f1f5f9; }
+        .nav-group-btn:hover .nav-icon { color: #5eead4; }
+        .nav-group-btn.group-active { color: #5eead4; }
+        .nav-group-btn.group-active .nav-icon { color: #5eead4; }
+        .nav-chevron {
+            margin-left: auto;
+            font-size: 0.68rem;
+            color: #3d546b;
+            transition: transform 0.22s ease;
+            flex-shrink: 0;
+        }
+        .nav-group-btn.group-open .nav-chevron { transform: rotate(90deg); }
+        /* Group items container */
+        .nav-group-items {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.26s cubic-bezier(.4,0,.2,1);
+        }
+        .nav-group-items.open { max-height: 400px; }
+        /* Sub-links */
+        .nav-sub-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px 7px 40px;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #607080;
+            text-decoration: none;
+            transition: all 0.14s ease;
+            position: relative;
+        }
+        .nav-sub-link::before {
+            content: '';
+            position: absolute;
+            left: 27px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #334155;
+            transition: background 0.14s, box-shadow 0.14s;
+        }
+        .nav-sub-link:hover { background: rgba(255,255,255,0.05); color: #cbd5e1; }
+        .nav-sub-link:hover::before { background: #5eead4; }
+        .nav-sub-link.active { color: #5eead4; background: rgba(13,148,136,0.12); font-weight: 600; }
+        .nav-sub-link.active::before { background: #0d9488; box-shadow: 0 0 0 3px rgba(13,148,136,0.2); }
 
         /* Custom scrollbar for sidebar */
         #sidebar-nav::-webkit-scrollbar { width: 3px; }
@@ -106,48 +175,106 @@
         </div>
 
         {{-- Navigation --}}
-        <nav id="sidebar-nav" style="flex:1; overflow-y:auto; padding:10px 10px 0;">
+        @php
+            $financeActive    = request()->routeIs('deposits.*','loans.*','repayments.*','fines.*');
+            $savingsActive    = request()->routeIs('savings.*');
+            $collectionActive = request()->routeIs('collection.*');
+            $reportsActive    = request()->routeIs('reports.*');
+        @endphp
+        <nav id="sidebar-nav" style="flex:1; overflow-y:auto; padding:10px 10px 16px;">
 
-            <span class="section-label">{{ __('Main') }}</span>
+            {{-- ── Dashboard ── --}}
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <i class="fas fa-gauge-high nav-icon"></i> {{ __('Dashboard') }}
             </a>
 
-            <span class="section-label">{{ __('Financial') }}</span>
-            <a href="{{ route('samities.index') }}" class="nav-link {{ request()->routeIs('samities.*') ? 'active' : '' }}">
-                <i class="fas fa-people-group nav-icon"></i> {{ __('Samities') }}
-            </a>
-            <a href="{{ route('deposits.index') }}" class="nav-link {{ request()->routeIs('deposits.*') ? 'active' : '' }}">
-                <i class="fas fa-piggy-bank nav-icon"></i> {{ __('Deposits') }}
-            </a>
-            <a href="{{ route('loans.index') }}" class="nav-link {{ request()->routeIs('loans.*') ? 'active' : '' }}">
-                <i class="fas fa-hand-holding-dollar nav-icon"></i> {{ __('Loans') }}
-            </a>
-            <a href="{{ route('repayments.index') }}" class="nav-link {{ request()->routeIs('repayments.*') ? 'active' : '' }}">
-                <i class="fas fa-rotate-left nav-icon"></i> {{ __('Repayments') }}
-            </a>
-            <a href="{{ route('fines.index') }}" class="nav-link {{ request()->routeIs('fines.*') ? 'active' : '' }}">
-                <i class="fas fa-triangle-exclamation nav-icon"></i> {{ __('Fines') }}
-            </a>
+            <div class="nav-divider"></div>
 
-            <span class="section-label">{{ __('Savings') }}</span>
-            <a href="{{ route('savings.plans.index') }}" class="nav-link {{ request()->routeIs('savings.plans.*') ? 'active' : '' }}">
-                <i class="fas fa-book-open nav-icon"></i> {{ __('Savings Plans') }}
-            </a>
-            <a href="{{ route('savings.deposits.index') }}" class="nav-link {{ request()->routeIs('savings.deposits.*') ? 'active' : '' }}">
-                <i class="fas fa-coins nav-icon"></i> {{ __('Savings Deposits') }}
-            </a>
-            <a href="{{ route('savings.withdrawals.index') }}" class="nav-link {{ request()->routeIs('savings.withdrawals.*') ? 'active' : '' }}">
-                <i class="fas fa-money-bill-transfer nav-icon"></i> {{ __('Withdrawals') }}
-            </a>
+            {{-- ── People ── --}}
+            <span class="section-label">{{ __('People') }}</span>
 
-            <span class="section-label">{{ __('Management') }}</span>
             <a href="{{ route('members.index') }}" class="nav-link {{ request()->routeIs('members.*') ? 'active' : '' }}">
                 <i class="fas fa-users nav-icon"></i> {{ __('Members') }}
             </a>
-            <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar nav-icon"></i> {{ __('Reports') }}
+            <a href="{{ route('samities.index') }}" class="nav-link {{ request()->routeIs('samities.*') ? 'active' : '' }}">
+                <i class="fas fa-people-group nav-icon"></i> {{ __('Samities') }}
             </a>
+            <a href="{{ route('staff.index') }}" class="nav-link {{ request()->routeIs('staff.*') ? 'active' : '' }}">
+                <i class="fas fa-id-badge nav-icon"></i> {{ __('Staff') }}
+            </a>
+
+            <div class="nav-divider"></div>
+
+            {{-- ── Operations ── --}}
+            <span class="section-label">{{ __('Operations') }}</span>
+
+            {{-- Finance group --}}
+            <div class="nav-group" id="group-finance">
+                <button class="nav-group-btn {{ $financeActive ? 'group-active group-open' : '' }}" onclick="toggleNavGroup('group-finance')">
+                    <i class="fas fa-wallet nav-icon"></i>
+                    <span>{{ __('Finance') }}</span>
+                    <i class="fas fa-chevron-right nav-chevron"></i>
+                </button>
+                <div class="nav-group-items {{ $financeActive ? 'open' : '' }}">
+                    <a href="{{ route('deposits.index') }}"   class="nav-sub-link {{ request()->routeIs('deposits.*')    ? 'active' : '' }}">{{ __('Deposits') }}</a>
+                    <a href="{{ route('loans.index') }}"      class="nav-sub-link {{ request()->routeIs('loans.*')       ? 'active' : '' }}">{{ __('Loans') }}</a>
+                    <a href="{{ route('repayments.index') }}" class="nav-sub-link {{ request()->routeIs('repayments.*')  ? 'active' : '' }}">{{ __('Repayments') }}</a>
+                    <a href="{{ route('fines.index') }}"      class="nav-sub-link {{ request()->routeIs('fines.*')       ? 'active' : '' }}">{{ __('Fines') }}</a>
+                </div>
+            </div>
+
+            {{-- Savings group --}}
+            <div class="nav-group" id="group-savings">
+                <button class="nav-group-btn {{ $savingsActive ? 'group-active group-open' : '' }}" onclick="toggleNavGroup('group-savings')">
+                    <i class="fas fa-piggy-bank nav-icon"></i>
+                    <span>{{ __('Savings') }}</span>
+                    <i class="fas fa-chevron-right nav-chevron"></i>
+                </button>
+                <div class="nav-group-items {{ $savingsActive ? 'open' : '' }}">
+                    <a href="{{ route('savings.plans.index') }}"       class="nav-sub-link {{ request()->routeIs('savings.plans.*')       ? 'active' : '' }}">{{ __('Plans') }}</a>
+                    <a href="{{ route('savings.deposits.index') }}"    class="nav-sub-link {{ request()->routeIs('savings.deposits.*')    ? 'active' : '' }}">{{ __('Deposits') }}</a>
+                    <a href="{{ route('savings.withdrawals.index') }}" class="nav-sub-link {{ request()->routeIs('savings.withdrawals.*') ? 'active' : '' }}">{{ __('Withdrawals') }}</a>
+                </div>
+            </div>
+
+            {{-- Collection group --}}
+            <div class="nav-group" id="group-collection">
+                <button class="nav-group-btn {{ $collectionActive ? 'group-active group-open' : '' }}" onclick="toggleNavGroup('group-collection')">
+                    <i class="fas fa-clipboard-check nav-icon"></i>
+                    <span>{{ __('Collection') }}</span>
+                    <i class="fas fa-chevron-right nav-chevron"></i>
+                </button>
+                <div class="nav-group-items {{ $collectionActive ? 'open' : '' }}">
+                    <a href="{{ route('collection.bulk') }}"  class="nav-sub-link {{ request()->routeIs('collection.bulk')  ? 'active' : '' }}">{{ __('Bulk Entry') }}</a>
+                    <a href="{{ route('collection.daily') }}" class="nav-sub-link {{ request()->routeIs('collection.daily') ? 'active' : '' }}">{{ __('Daily Summary') }}</a>
+                </div>
+            </div>
+
+            {{-- Accounting --}}
+            <a href="{{ route('accounts.index') }}" class="nav-link {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
+                <i class="fas fa-book-open nav-icon"></i> {{ __('Accounting') }}
+            </a>
+
+            <div class="nav-divider"></div>
+
+            {{-- ── Analytics ── --}}
+            <span class="section-label">{{ __('Analytics') }}</span>
+
+            {{-- Reports group --}}
+            <div class="nav-group" id="group-reports">
+                <button class="nav-group-btn {{ $reportsActive ? 'group-active group-open' : '' }}" onclick="toggleNavGroup('group-reports')">
+                    <i class="fas fa-chart-bar nav-icon"></i>
+                    <span>{{ __('Reports') }}</span>
+                    <i class="fas fa-chevron-right nav-chevron"></i>
+                </button>
+                <div class="nav-group-items {{ $reportsActive ? 'open' : '' }}">
+                    <a href="{{ route('reports.index') }}"       class="nav-sub-link {{ request()->routeIs('reports.index')       ? 'active' : '' }}">{{ __('Overview') }}</a>
+                    <a href="{{ route('reports.members') }}"     class="nav-sub-link {{ request()->routeIs('reports.members')     ? 'active' : '' }}">{{ __('Member Report') }}</a>
+                    <a href="{{ route('reports.loans') }}"       class="nav-sub-link {{ request()->routeIs('reports.loans')       ? 'active' : '' }}">{{ __('Loan Report') }}</a>
+                    <a href="{{ route('reports.collections') }}" class="nav-sub-link {{ request()->routeIs('reports.collections') ? 'active' : '' }}">{{ __('Collections') }}</a>
+                    <a href="{{ route('reports.defaulters') }}"  class="nav-sub-link {{ request()->routeIs('reports.defaulters')  ? 'active' : '' }}">{{ __('Defaulters') }}</a>
+                </div>
+            </div>
 
         </nav>
 
@@ -374,6 +501,21 @@
                 if (chevron) { chevron.style.transform = 'rotate(0deg)'; }
             }
         });
+
+        /* ── Nav Group Accordion ── */
+        function toggleNavGroup(id) {
+            const group = document.getElementById(id);
+            const items = group.querySelector('.nav-group-items');
+            const btn   = group.querySelector('.nav-group-btn');
+            const isOpen = items.classList.contains('open');
+            if (isOpen) {
+                items.classList.remove('open');
+                btn.classList.remove('group-open');
+            } else {
+                items.classList.add('open');
+                btn.classList.add('group-open');
+            }
+        }
 
         let sidebarOpen = window.innerWidth >= 1024;
 

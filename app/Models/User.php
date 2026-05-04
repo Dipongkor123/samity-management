@@ -20,6 +20,7 @@ class User extends Authenticatable
         'father_name', 'mother_name', 'spouse_name',
         'emergency_contact', 'emergency_phone',
         'role', 'is_active', 'password',
+        'designation', 'assigned_area', 'joining_date', 'is_staff',
     ];
 
     protected $hidden = [
@@ -32,7 +33,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'is_active'         => 'boolean',
+            'is_staff'          => 'boolean',
             'date_of_birth'     => 'date',
+            'joining_date'      => 'date',
         ];
     }
 

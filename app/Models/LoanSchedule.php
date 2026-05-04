@@ -10,7 +10,7 @@ class LoanSchedule extends Model
     protected $fillable = [
         'loan_id', 'installment_no', 'due_date',
         'opening_balance', 'emi_amount', 'principal', 'interest',
-        'closing_balance', 'status',
+        'closing_balance', 'status', 'penalty_amount', 'paid_date',
     ];
 
     protected function casts(): array
@@ -21,8 +21,15 @@ class LoanSchedule extends Model
             'principal'       => 'decimal:2',
             'interest'        => 'decimal:2',
             'closing_balance' => 'decimal:2',
+            'penalty_amount'  => 'decimal:2',
             'due_date'        => 'date',
+            'paid_date'       => 'date',
         ];
+    }
+
+    public function isOverdue(): bool
+    {
+        return $this->status !== 'paid' && $this->due_date->isPast();
     }
 
     public function loan(): BelongsTo
